@@ -1,5 +1,8 @@
 <template>
-  <div class="flex min-h-screen flex-col bg-[#f3f4f6] text-slate-900 xl:flex-row">
+  <div
+    class="flex min-h-screen flex-col xl:flex-row"
+    :style="{ backgroundColor: 'var(--app-bg)', color: 'var(--app-fg)' }"
+  >
     <AdminSidebar />
 
     <div class="flex min-h-screen min-w-0 flex-1 flex-col">
