@@ -23,7 +23,7 @@ const signIn = async () => {
   isSubmitting.value   = true
 
   try {
-    const response = await $fetch <{ access_token: string; token_type: string }>(
+    const response = await $fetch<{ access_token: string }>(
       "/api/auth/login",
       {
         method: "POST",
@@ -64,12 +64,12 @@ const passwordHint = computed(() => {
       class="absolute -bottom-24 -right-24 h-72 w-72 rounded-full blur-3xl opacity-40 bg-sky-200"
     />
 
-    <div class="relative min-h-screen flex items-center justify-center px-4 py-10">
-      <div class="w-full max-w-md">
+    <div class="relative flex min-h-screen items-center justify-center px-4 py-6 sm:px-6 sm:py-10">
+      <div class="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-md">
         <!-- Brand -->
-        <div class="mb-8 flex items-center justify-center gap-3">
+        <div class="mb-6 flex items-center justify-center gap-3 sm:mb-8">
           <div
-            class="h-11 w-11 rounded-2xl bg-slate-900 flex items-center justify-center shadow-md shadow-slate-900/10"
+            class="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 shadow-md shadow-slate-900/10 sm:h-11 sm:w-11"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               <path
@@ -99,13 +99,13 @@ const passwordHint = computed(() => {
           class="rounded-3xl border border-slate-200/70 bg-white/80 backdrop-blur
                  shadow-xl shadow-slate-900/5"
         >
-          <div class="p-7 sm:p-8">
-            <h1 class="text-2xl font-semibold text-slate-900">Sign in</h1>
+          <div class="p-5 sm:p-7 md:p-8">
+            <h1 class="text-xl font-semibold text-slate-900 sm:text-2xl">Sign in</h1>
             <p class="mt-1 text-sm text-slate-500">
               Access your dashboard securely.
             </p>
 
-            <form class="mt-6 space-y-5" @submit.prevent="signIn">
+            <form class="mt-6 space-y-4 sm:space-y-5" @submit.prevent="signIn">
               <!-- Email -->
               <div class="space-y-2">
                 <label class="block text-sm font-medium text-slate-700">
@@ -138,9 +138,9 @@ const passwordHint = computed(() => {
                     autocomplete="email"
                     enterkeyhint="next"
                     placeholder="admin@stockflow.com"
-                    class="w-full h-11 rounded-2xl border border-slate-200 bg-white/60 pl-10 pr-4
-                           text-sm outline-none transition
-                           focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                    class="h-10 w-full rounded-2xl border border-slate-200 bg-white/60 pl-10 pr-4
+                           text-sm outline-none transition focus:border-slate-400
+                           focus:ring-4 focus:ring-slate-100 sm:h-11"
                   />
                 </div>
               </div>
@@ -178,9 +178,9 @@ const passwordHint = computed(() => {
                     autocomplete="current-password"
                     enterkeyhint="done"
                     placeholder="••••••••"
-                    class="w-full h-11 rounded-2xl border border-slate-200 bg-white/60 pl-10 pr-12
-                           text-sm outline-none transition
-                           focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                    class="h-10 w-full rounded-2xl border border-slate-200 bg-white/60 pl-10 pr-12
+                           text-sm outline-none transition focus:border-slate-400
+                           focus:ring-4 focus:ring-slate-100 sm:h-11"
                   />
 
                   <button
@@ -208,7 +208,7 @@ const passwordHint = computed(() => {
               </div>
 
               <!-- Remember -->
-              <div class="flex items-center justify-between">
+              <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <label class="flex items-center gap-3 select-none">
                   <input
                     v-model="rememberMe"
@@ -218,7 +218,7 @@ const passwordHint = computed(() => {
                   <span class="text-sm text-slate-600">Remember me</span>
                 </label>
 
-                <span class="text-xs text-slate-400">30 days</span>
+                <span class="pl-7 text-xs text-slate-400 sm:pl-0">30 days</span>
               </div>
 
               <!-- Messages -->
@@ -244,11 +244,11 @@ const passwordHint = computed(() => {
               <button
                 type="submit"
                 :disabled="isSubmitting"
-                class="w-full h-11 rounded-2xl bg-slate-900 text-white text-sm font-semibold
+                class="h-10 w-full rounded-2xl bg-slate-900 text-sm font-semibold text-white
                        shadow-sm shadow-slate-900/10 transition
                        hover:bg-slate-800 active:scale-[0.99]
                        disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100
-                       flex items-center justify-center gap-2"
+                       flex items-center justify-center gap-2 sm:h-11"
               >
                 <svg
                   v-if="isSubmitting"
