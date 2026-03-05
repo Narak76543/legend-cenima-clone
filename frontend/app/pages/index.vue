@@ -1,28 +1,24 @@
 <script setup lang="ts">
 type AuthMode = "signin" | "register"
 
-const authMode = ref<AuthMode>("signin")
-const email = ref("admin@stockflow.com")
-const password = ref("")
-const fullName = ref("")
-const jobTitle = ref("Administrator")
-const phone = ref("")
-const bio = ref("")
-const profileImage = ref<string | null>(null)
-const showPassword = ref(false)
-const rememberMe = ref(false)
-const isSubmitting = ref(false)
-const errorMessage = ref("")
-const successMessage = ref("")
-const { t } = useAppLanguage()
-const { fetchProfile } = useAdminProfile()
+const authMode                = ref<AuthMode>("signin")
+const email                   = ref("admin@stockflow.com")
+const password                = ref("")
+const fullName                = ref("")
+const jobTitle                = ref("Administrator")
+const phone                   = ref("")
+const bio                     = ref("")
+const profileImage            = ref<string | null>(null)
+const showPassword            = ref(false)
+const rememberMe              = ref(false)
+const isSubmitting            = ref(false)
+const errorMessage            = ref("")
+const successMessage          = ref("")
+const { t }                   = useAppLanguage()
+const { authToken, login, register } = useAdminAuth()
+const { fetchProfile }        = useAdminProfile()
 const { prepareProfileImage } = useProfileImage()
-
-const authToken = useCookie<string | null>("admin_token", {
-  default: () => null,
-  path: "/",
-  sameSite: "lax",
-})
+const { loginBackdropStyle, loginCardStyle } = useAuthPageStyles()
 
 if (authToken.value) {
   await navigateTo("/dashboard", { replace: true })
@@ -68,16 +64,12 @@ const syncProfileImage = async (event: Event) => {
 }
 
 const loginAdmin = async (successKey: string) => {
-  const response = await $fetch<{ access_token: string }>("/api/auth/login", {
-    method: "POST",
-    body: {
-      email: email.value,
-      password: password.value,
-      remember_me: rememberMe.value,
-    },
+  await login({
+    email: email.value,
+    password: password.value,
+    remember_me: rememberMe.value,
   })
 
-  authToken.value = response.access_token
   await fetchProfile()
   successMessage.value = t(successKey)
   await navigateTo("/dashboard", { replace: true })
@@ -89,17 +81,14 @@ const submitAuth = async () => {
 
   try {
     if (isRegisterMode.value) {
-      await $fetch("/api/auth/register", {
-        method: "POST",
-        body: {
-          email: email.value,
-          password: password.value,
-          full_name: fullName.value,
-          job_title: jobTitle.value || null,
-          phone: phone.value || null,
-          bio: bio.value || null,
-          profile_image: profileImage.value,
-        },
+      await register({
+        email: email.value,
+        password: password.value,
+        full_name: fullName.value,
+        job_title: jobTitle.value || null,
+        phone: phone.value || null,
+        bio: bio.value || null,
+        profile_image: profileImage.value,
       })
 
       await loginAdmin("auth.registrationSuccess")
@@ -116,12 +105,13 @@ const submitAuth = async () => {
 
 <template>
   <main class="relative min-h-screen overflow-hidden">
-    <div class="absolute inset-0 bg-slate-50" />
+    <div class="absolute inset-0" :style="loginBackdropStyle" />
+    <div class="absolute inset-0 bg-slate-950/35 backdrop-blur-[2px]" />
     <div class="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-orange-200 opacity-40 blur-3xl" />
     <div class="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-sky-200 opacity-40 blur-3xl" />
 
     <div class="relative flex min-h-screen items-center justify-center px-4 py-6 sm:px-6 sm:py-10">
-      <div class="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl">
+      <div class="w-full max-w-md sm:max-w-xl md:max-w-2xl">
         <div class="mb-6 flex items-center justify-center gap-3 sm:mb-8">
           <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 shadow-md shadow-slate-900/10 sm:h-11 sm:w-11">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -132,25 +122,25 @@ const submitAuth = async () => {
 
           <div class="leading-tight">
             <div class="text-xl font-semibold text-slate-900">{{ t("common.stockflow") }}</div>
-            <div class="text-xs text-slate-500">{{ t("auth.adminConsole") }}</div>
+            <div class="text-xs font-medium text-slate-300">{{ t("auth.adminConsole") }}</div>
           </div>
         </div>
 
-        <section class="rounded-3xl border border-slate-200/70 bg-white/80 shadow-xl shadow-slate-900/5 backdrop-blur">
-          <div class="border-b border-slate-200/70 px-5 pt-5 sm:px-7 sm:pt-7 md:px-8 md:pt-8">
-            <div class="grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1">
+        <section class="rounded-3xl border shadow-2xl shadow-slate-950/25 backdrop-blur-md" :style="loginCardStyle">
+          <div class="border-b border-slate-300/80 px-5 pt-5 sm:px-7 sm:pt-7 md:px-8 md:pt-8">
+            <div class="grid grid-cols-2 gap-2 rounded-2xl bg-slate-200/80 p-1">
               <button
                 type="button"
-                class="rounded-2xl px-4 py-2.5 text-sm font-semibold transition"
-                :class="!isRegisterMode ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                class="rounded-2xl px-4 py-2.5 text-base font-semibold transition"
+                :class="!isRegisterMode ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
                 @click="authMode = 'signin'"
               >
                 {{ t("auth.signIn") }}
               </button>
               <button
                 type="button"
-                class="rounded-2xl px-4 py-2.5 text-sm font-semibold transition"
-                :class="isRegisterMode ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                class="rounded-2xl px-4 py-2.5 text-base font-semibold transition"
+                :class="isRegisterMode ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
                 @click="authMode = 'register'"
               >
                 {{ t("auth.createAccount") }}
@@ -159,10 +149,10 @@ const submitAuth = async () => {
           </div>
 
           <div class="p-5 sm:p-7 md:p-8">
-            <h1 class="text-xl font-semibold text-slate-900 sm:text-2xl">
+            <h1 class="text-2xl font-bold text-slate-950 sm:text-3xl">
               {{ isRegisterMode ? t("auth.createAccount") : t("auth.signIn") }}
             </h1>
-            <p class="mt-1 text-sm text-slate-500">
+            <p class="mt-1 text-sm font-medium text-slate-600">
               {{ isRegisterMode ? t("auth.createAdminAccount") : t("auth.accessSecurely") }}
             </p>
 
@@ -192,39 +182,39 @@ const submitAuth = async () => {
 
                 <div class="grid gap-4 sm:grid-cols-2">
                   <div class="space-y-2 sm:col-span-2">
-                    <label class="block text-sm font-medium text-slate-700">{{ t("auth.fullName") }}</label>
+                    <label class="block text-sm font-semibold text-slate-800">{{ t("auth.fullName") }}</label>
                     <input
                       v-model.trim="fullName"
                       type="text"
                       required
-                      class="h-11 w-full rounded-2xl border border-slate-200 bg-white/60 px-4 text-sm outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                      class="h-12 w-full rounded-2xl border border-slate-300 bg-white px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
                     />
                   </div>
 
                   <div class="space-y-2">
-                    <label class="block text-sm font-medium text-slate-700">{{ t("auth.jobTitle") }}</label>
+                    <label class="block text-sm font-semibold text-slate-800">{{ t("auth.jobTitle") }}</label>
                     <input
                       v-model.trim="jobTitle"
                       type="text"
-                      class="h-11 w-full rounded-2xl border border-slate-200 bg-white/60 px-4 text-sm outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                      class="h-12 w-full rounded-2xl border border-slate-300 bg-white px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
                     />
                   </div>
 
                   <div class="space-y-2">
-                    <label class="block text-sm font-medium text-slate-700">{{ t("auth.phone") }}</label>
+                    <label class="block text-sm font-semibold text-slate-800">{{ t("auth.phone") }}</label>
                     <input
                       v-model.trim="phone"
                       type="text"
-                      class="h-11 w-full rounded-2xl border border-slate-200 bg-white/60 px-4 text-sm outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                      class="h-12 w-full rounded-2xl border border-slate-300 bg-white px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
                     />
                   </div>
 
                   <div class="space-y-2 sm:col-span-2">
-                    <label class="block text-sm font-medium text-slate-700">{{ t("auth.bio") }}</label>
+                    <label class="block text-sm font-semibold text-slate-800">{{ t("auth.bio") }}</label>
                     <textarea
                       v-model.trim="bio"
                       rows="3"
-                      class="w-full rounded-2xl border border-slate-200 bg-white/60 px-4 py-3 text-sm outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                      class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
                     />
                   </div>
                 </div>
@@ -232,10 +222,10 @@ const submitAuth = async () => {
 
               <div class="grid gap-4 sm:grid-cols-2">
                 <div class="space-y-2" :class="isRegisterMode ? '' : 'sm:col-span-2'">
-                  <label class="block text-sm font-medium text-slate-700">{{ t("auth.email") }}</label>
+                  <label class="block text-sm font-semibold text-slate-800">{{ t("auth.email") }}</label>
 
                   <div class="relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                         <path d="M4 6h16v12H4V6z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
                         <path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -248,16 +238,16 @@ const submitAuth = async () => {
                       required
                       autocomplete="email"
                       :placeholder="t('auth.email')"
-                      class="h-11 w-full rounded-2xl border border-slate-200 bg-white/60 pl-10 pr-4 text-sm outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                      class="h-12 w-full rounded-2xl border border-slate-300 bg-white pl-10 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
                     />
                   </div>
                 </div>
 
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-slate-700">{{ t("auth.password") }}</label>
+                  <label class="block text-sm font-semibold text-slate-800">{{ t("auth.password") }}</label>
 
                   <div class="relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                         <path d="M7 10V8a5 5 0 0 1 10 0v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                         <path d="M6 10h12v10H6V10z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
@@ -270,12 +260,12 @@ const submitAuth = async () => {
                       required
                       :autocomplete="isRegisterMode ? 'new-password' : 'current-password'"
                       :placeholder="t('auth.password')"
-                      class="h-11 w-full rounded-2xl border border-slate-200 bg-white/60 pl-10 pr-12 text-sm outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                      class="h-12 w-full rounded-2xl border border-slate-300 bg-white pl-10 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
                     />
 
                     <button
                       type="button"
-                      class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-800"
                       aria-label="Toggle password"
                       @click="showPassword = !showPassword"
                     >
@@ -292,7 +282,7 @@ const submitAuth = async () => {
                     </button>
                   </div>
 
-                  <p class="text-xs text-slate-500">{{ passwordHint }}</p>
+                  <p class="text-xs font-medium text-slate-600">{{ passwordHint }}</p>
                 </div>
               </div>
 
@@ -303,10 +293,10 @@ const submitAuth = async () => {
                     type="checkbox"
                     class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-200"
                   />
-                  <span class="text-sm text-slate-600">{{ t("auth.rememberMe") }}</span>
+                  <span class="text-sm font-medium text-slate-700">{{ t("auth.rememberMe") }}</span>
                 </label>
 
-                <span class="pl-7 text-xs text-slate-400 sm:pl-0">{{ t("auth.days30") }}</span>
+                <span class="pl-7 text-xs font-medium text-slate-500 sm:pl-0">{{ t("auth.days30") }}</span>
               </div>
 
               <Transition name="fade">
@@ -324,7 +314,7 @@ const submitAuth = async () => {
               <button
                 type="submit"
                 :disabled="isSubmitting"
-                class="flex h-10 w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 text-sm font-semibold text-white shadow-sm shadow-slate-900/10 transition hover:bg-slate-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100 sm:h-11"
+                class="flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 text-base font-semibold text-white shadow-lg shadow-slate-900/20 transition hover:bg-slate-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100 sm:h-12"
               >
                 <svg v-if="isSubmitting" class="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M12 2a10 10 0 1 0 10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
@@ -345,7 +335,7 @@ const submitAuth = async () => {
               <button
                 v-if="!isRegisterMode"
                 type="button"
-                class="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white text-sm font-semibold text-slate-900 transition hover:bg-slate-50"
+                class="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-slate-300 bg-white text-sm font-semibold text-slate-900 transition hover:bg-slate-50"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M12 2l7 4v6c0 5-3 9-7 10-4-1-7-5-7-10V6l7-4z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
@@ -356,18 +346,18 @@ const submitAuth = async () => {
             </form>
           </div>
 
-          <div class="rounded-b-3xl border-t border-slate-200/70 bg-white/60 px-7 py-4 sm:px-8">
+          <div class="rounded-b-3xl border-t border-slate-300/80 bg-slate-50/90 px-7 py-4 sm:px-8">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p class="text-xs text-slate-500">
+              <p class="text-xs font-medium text-slate-600">
                 {{ t("auth.agreePrefix") }}
-                <button type="button" class="text-slate-700 hover:underline">{{ t("common.terms") }}</button>
+                <button type="button" class="font-semibold text-slate-800 hover:underline">{{ t("common.terms") }}</button>
                 {{ t("auth.and") }}
-                <button type="button" class="text-slate-700 hover:underline">{{ t("common.privacyPolicy") }}</button>.
+                <button type="button" class="font-semibold text-slate-800 hover:underline">{{ t("common.privacyPolicy") }}</button>.
               </p>
 
               <button
                 type="button"
-                class="text-xs font-semibold text-slate-600 hover:text-slate-900"
+                class="text-sm font-semibold text-slate-700 hover:text-slate-950"
                 @click="authMode = isRegisterMode ? 'signin' : 'register'"
               >
                 {{ isRegisterMode ? t("auth.switchToSignIn") : t("auth.switchToRegister") }}

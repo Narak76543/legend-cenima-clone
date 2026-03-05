@@ -3,6 +3,8 @@ const apiBase = import.meta.env.NUXT_API_BASE || "http://localhost:8001";
 const publicApiBase = import.meta.env.NUXT_PUBLIC_API_BASE || "http://localhost:8001";
 
 export default defineNuxtConfig({
+  buildDir: "/tmp/nuxt-build",
+
   app: {
     head: {
       link: [
@@ -18,7 +20,6 @@ export default defineNuxtConfig({
 
   modules: [
     "@nuxt/ui",
-    "@nuxt/eslint",
   ],
   devtools: { enabled: true },
 
@@ -44,15 +45,6 @@ export default defineNuxtConfig({
     esbuild: {
       options: {
         target: "esnext",
-      },
-    },
-  },
-
-  eslint: {
-    config: {
-      standalone: false,
-      nuxt: {
-        sortConfigKeys: true,
       },
     },
   },

@@ -20,109 +20,43 @@ type ChartPoint = {
   y: number
 }
 
-const surfaceStyle = {
-  backgroundColor: "var(--app-surface)",
-  borderColor: "var(--app-border)",
+type StatusTone = "success" | "warning" | "info" | "danger"
+type CategorySlice = {
+  name: string
+  color: string
+  share: string
+  units: number
+  dashArray: string
+  dashOffset: string
 }
 
-const mutedSurfaceStyle = {
-  backgroundColor: "var(--app-surface-muted)",
-}
-
-const textStyle = {
-  color: "var(--app-fg)",
-}
-
-const mutedTextStyle = {
-  color: "var(--app-fg-muted)",
-}
 const { isDark } = useThemeMode()
 const { t } = useAppLanguage()
+const { categories: categoryItems, fetchCategories } = useCategories()
+const { fetchProducts, products } = useProducts()
+const {
+  amountTextClass,
+  donutValueStyle,
+  mutedSurfaceStyle,
+  mutedTextStyle,
+  statusToneClass,
+  summaryDeltaClass,
+  summaryIconClass,
+  summaryValueStyle,
+  surfaceStyle,
+  textStyle,
+  ui,
+} = useDashboardStyles()
 const chartAnimated = ref(false)
+const categoryPalette = ["#111c4e", "#5b7cff", "#14b8a6", "#f59e0b", "#ef4444", "#8b5cf6"]
 
-const ui = {
-  page: "space-y-6 pb-8 sm:space-y-8 sm:pb-10",
-  summaryGrid: "grid gap-2 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4 xl:gap-6",
-  summaryCard: "group rounded-[15px] border p-4 shadow-sm transition-all hover:shadow-md sm:p-5",
-  summaryIconBase: "flex h-10 w-10 items-center justify-center rounded-full shadow-sm sm:h-14 sm:w-14",
-  summaryDeltaBase: "flex items-center justify-end gap-1 text-sm font-bold sm:text-base",
-  summaryDeltaLabel: "mt-1 text-[9px] font-bold uppercase tracking-widest sm:text-[10px]",
-  summaryTitle: "mt-6 text-[12px] font-medium sm:mt-8 sm:text-sm",
-  summaryValue: "text-xl font-bold tracking-tight sm:text-2xl",
-  summarySparkline: "h-5 w-12 sm:h-6 sm:w-[60px]",
-  panelGrid: "grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-6 xl:grid-cols-[minmax(0,1fr)_24rem] xl:gap-8",
-  panel: "rounded-xl border p-5 shadow-sm sm:p-6 lg:p-8 xl:p-10",
-  compactPanel: "rounded-xl border p-5 shadow-sm sm:p-6 lg:p-6 xl:p-8",
-  panelHeader: "flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between",
-  panelTitle: "text-xl font-bold tracking-tight sm:text-2xl",
-  panelSubtitle: "mt-1 text-xs font-medium sm:text-sm",
-  legend: "flex flex-wrap items-center gap-4 text-xs font-bold sm:gap-8 sm:text-sm",
-  donutWrap: "relative mx-auto mt-8 flex h-52 w-52 items-center justify-center sm:mt-10 sm:h-60 sm:w-60 lg:mt-12 lg:h-64 lg:w-64",
-  donutValue: "text-3xl font-bold leading-none tracking-tight sm:text-4xl",
-  donutLabel: "mt-2 text-[9px] font-semibold uppercase tracking-[0.25em] sm:text-[10px]",
-  categoryRow: "flex items-center justify-between gap-4",
-  categoryName: "text-xs font-medium sm:text-sm",
-  categoryShare: "text-xs font-semibold sm:text-sm",
-  tablePanel: "overflow-hidden rounded-xl border shadow-sm",
-  tableHeader: "flex flex-col gap-3 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-6 lg:px-10 lg:py-8",
-  tableTitle: "text-xl font-semibold tracking-tight sm:text-2xl",
-  tableAction: "text-xs font-medium transition hover:underline sm:text-sm",
-  tableHead: "text-left text-[9px] font-semibold uppercase tracking-[0.15em] sm:text-[10px] sm:tracking-[0.2em]",
-  tableTypeCell: "px-5 py-4 text-xs font-semibold sm:px-8 sm:py-5 sm:text-sm lg:px-10 lg:py-6 lg:text-base",
-  tableCell: "px-4 py-4 text-xs font-normal sm:px-6 sm:py-5 sm:text-sm lg:py-6",
-  tableAmountCell: "px-4 py-4 text-xs font-semibold sm:px-6 sm:py-5 sm:text-sm lg:py-6 lg:text-base",
-  tableStatus: "inline-flex min-w-[6.5rem] items-center justify-center rounded-[5px] border px-3 py-1 text-center text-[9px] font-semibold uppercase tracking-[0.14em] sm:min-w-[7rem] sm:px-4 sm:py-1.5 sm:text-[10px]",
-  alertsHeader: "mb-6 sm:mb-8",
-  alertsTitle: "text-center text-xl font-semibold tracking-tight sm:text-2xl",
-  alertsSubtitle: "mt-1 text-center text-xs font-medium sm:text-sm",
-  alertsList: "space-y-3 sm:space-y-4",
-  alertsItem: "grid grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl p-2.5 sm:grid-cols-[3.5rem_minmax(0,1fr)_auto] sm:gap-4",
-  alertsIconWrap: "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-slate-100 text-slate-500 shadow-sm sm:h-14 sm:w-14",
-  alertsName: "text-sm font-semibold leading-5 sm:text-[0.95rem]",
-  alertsCount: "mt-1 inline-flex items-center rounded-[5px] px-2.5 py-1 text-[11px] font-semibold leading-none whitespace-nowrap",
-  alertsButton: "inline-flex h-9 items-center justify-center rounded-[10px] bg-slate-800 px-3 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-white shadow-sm transition hover:bg-slate-700 active:scale-95 sm:h-10 sm:px-3.5",
-  alertsFooterButton: "mt-6 w-full rounded-2xl border py-4 text-sm font-medium transition hover:opacity-90 active:scale-[0.98] sm:mt-8 sm:py-5 sm:text-base",
-} as const
+const lowStockProducts = computed(() =>
+  products.value
+    .filter((product) => product.stock_qty <= product.low_stock_threshold)
+    .sort((left, right) => left.stock_qty - right.stock_qty),
+)
 
-const summaryIconClassByColor: Record<SummaryCard["color"], string> = {
-  emerald: "bg-emerald-50 text-emerald-600",
-  blue: "bg-blue-50 text-blue-600",
-  slate: "bg-slate-50 text-slate-600",
-  amber: "bg-amber-50 text-amber-600",
-}
-
-const summaryValueStyleByColor: Record<SummaryCard["color"], Record<string, string>> = {
-  emerald: {
-    backgroundImage: "linear-gradient(135deg, #059669 0%, #10b981 55%, #34d399 100%)",
-    WebkitBackgroundClip: "text",
-    backgroundClip: "text",
-    color: "transparent",
-    textShadow: "0 8px 18px rgba(16, 185, 129, 0.18)",
-  },
-  blue: {
-    backgroundImage: "linear-gradient(135deg, #2563eb 0%, #3b82f6 55%, #60a5fa 100%)",
-    WebkitBackgroundClip: "text",
-    backgroundClip: "text",
-    color: "transparent",
-    textShadow: "0 8px 18px rgba(59, 130, 246, 0.18)",
-  },
-  slate: {
-    backgroundImage: "linear-gradient(135deg, #0f172a 0%, #334155 55%, #64748b 100%)",
-    WebkitBackgroundClip: "text",
-    backgroundClip: "text",
-    color: "transparent",
-    textShadow: "0 8px 18px rgba(71, 85, 105, 0.16)",
-  },
-  amber: {
-    backgroundImage: "linear-gradient(135deg, #d97706 0%, #f59e0b 55%, #fbbf24 100%)",
-    WebkitBackgroundClip: "text",
-    backgroundClip: "text",
-    color: "transparent",
-    textShadow: "0 8px 18px rgba(245, 158, 11, 0.16)",
-  },
-}
-
-const summaryCards: SummaryCard[] = [
+const summaryCards = computed<SummaryCard[]>(() => [
   {
     title: "dashboard.totalSalesToday",
     value: "$12,450",
@@ -155,15 +89,15 @@ const summaryCards: SummaryCard[] = [
   },
   {
     title: "dashboard.lowStockAlerts",
-    value: "12",
-    delta: "+2 items",
-    deltaLabel: "dashboard.since8am",
+    value: lowStockProducts.value.length.toString(),
+    delta: `${lowStockProducts.value.length} items`,
+    deltaLabel: "Below threshold",
     deltaTrend: "up",
     icon: "i-lucide-triangle-alert",
     color: "amber",
     chartColor: "#f59e0b",
   },
-]
+])
 
 const weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
@@ -195,15 +129,16 @@ const chartPoints = (values: number[]): ChartPoint[] =>
     y: yForValue(value),
   }))
 
+
 const toSmoothPath = (points: ChartPoint[]) => {
   if (!points.length) return ""
-  if (points.length === 1) return `M ${points[0].x} ${points[0].y}`
+  if (points.length === 1) return `M ${points[0]!.x} ${points[0]!.y}`
 
-  let path = `M ${points[0].x} ${points[0].y}`
+  let path = `M ${points[0]!.x} ${points[0]!.y}`
 
   for (let index = 0; index < points.length - 1; index += 1) {
-    const current = points[index]
-    const next = points[index + 1]
+    const current = points[index]!
+    const next = points[index + 1]!
     const controlX = (current.x + next.x) / 2
 
     path += ` C ${controlX} ${current.y}, ${controlX} ${next.y}, ${next.x} ${next.y}`
@@ -217,8 +152,8 @@ const toAreaPath = (points: ChartPoint[]) => {
 
   const baseY = chartHeight - chartPadding.bottom
   const linePath = toSmoothPath(points)
-  const first = points[0]
-  const last = points[points.length - 1]
+  const first = points[0]!
+  const last = points[points.length - 1]!
 
   return `${linePath} L ${last.x} ${baseY} L ${first.x} ${baseY} Z`
 }
@@ -232,48 +167,104 @@ const purchaseAreaPath = toAreaPath(purchasePoints)
 const chartGridStroke = computed(() => (isDark.value ? "rgba(226,232,240,0.45)" : "rgba(148,163,184,0.32)"))
 
 onMounted(() => {
-  requestAnimationFrame(() => {
-    chartAnimated.value = true
+  Promise.allSettled([
+    fetchCategories(),
+    fetchProducts(),
+  ]).finally(() => {
+    requestAnimationFrame(() => {
+      chartAnimated.value = true
+    })
   })
 })
 
-const categories = [
-  { name: "Electronics", color: "#111c4e", share: "40%" },
-  { name: "Office Supplies", color: "#5b7cff", share: "25%" },
-  { name: "Hardware", color: "#14b8a6", share: "15%" },
-  { name: "Furniture", color: "#f59e0b", share: "20%" },
-]
+const donutRadius = 40
+const donutCircumference = 2 * Math.PI * donutRadius
 
-const donutValueStyle = {
-  backgroundImage: "linear-gradient(135deg, #111c4e 0%, #3559f6 55%, #14b8a6 100%)",
-  WebkitBackgroundClip: "text",
-  backgroundClip: "text",
-  color: "transparent",
-  textShadow: "0 10px 24px rgba(37, 99, 235, 0.16)",
-}
+const stockByCategory = computed<CategorySlice[]>(() => {
+  const stockMap = new Map<string, number>()
+
+  for (const product of products.value) {
+    const nextQty = Math.max(0, product.stock_qty || 0)
+    stockMap.set(product.category_id, (stockMap.get(product.category_id) || 0) + nextQty)
+  }
+
+  const categoryRows = categoryItems.value.map((category) => ({
+    id: category.id,
+    name: category.name,
+    units: stockMap.get(category.id) || 0,
+  }))
+
+  const uncategorizedUnits = Array.from(stockMap.entries())
+    .filter(([categoryId]) => !categoryItems.value.some((item) => item.id === categoryId))
+    .reduce((sum, [, units]) => sum + units, 0)
+
+  const rows = [
+    ...categoryRows,
+    ...(uncategorizedUnits > 0
+      ? [{
+          id: "uncategorized",
+          name: "Uncategorized",
+          units: uncategorizedUnits,
+        }]
+      : []),
+  ]
+    .sort((left, right) => right.units - left.units)
+
+  const totalUnits = rows.reduce((sum, row) => sum + row.units, 0)
+  let offset = 0
+
+  return rows.map((row, index) => {
+    const ratio = totalUnits ? row.units / totalUnits : 0
+    const segment = ratio * donutCircumference
+    const currentOffset = offset
+    if (row.units > 0) {
+      offset += segment
+    }
+
+    return {
+      name: row.name,
+      color: categoryPalette[index % categoryPalette.length]!,
+      share: `${Math.round(ratio * 100)}%`,
+      units: row.units,
+      dashArray: `${segment.toFixed(1)} ${(donutCircumference - segment).toFixed(1)}`,
+      dashOffset: `${(-currentOffset).toFixed(1)}`,
+    }
+  })
+})
+
+const donutSlices = computed(() =>
+  stockByCategory.value.filter((category) => category.units > 0),
+)
+
+const visibleStockByCategory = computed(() => {
+  const nonZeroCategories = stockByCategory.value.filter((category) => category.units > 0)
+
+  if (!nonZeroCategories.length) {
+    return stockByCategory.value.slice(0, 1)
+  }
+
+  return nonZeroCategories.slice(0, 4)
+})
+
+const totalStockUnits = computed(() =>
+  products.value.reduce((sum, product) => sum + Math.max(0, product.stock_qty || 0), 0),
+)
 
 const transactions = [
-  { type: "Sales", reference: "INV-2024-001", amount: "$1,240.00", date: "Oct 24, 2024", status: "COMPLETED", statusClass: "border-teal-200 bg-teal-50/80 text-teal-700" },
-  { type: "Purchase", reference: "PO-2024-882", amount: "$850.00", date: "Oct 23, 2024", status: "PENDING", statusClass: "border-amber-200 bg-amber-50/80 text-amber-700" },
-  { type: "Sales", reference: "INV-2024-002", amount: "$3,100.00", date: "Oct 22, 2024", status: "COMPLETED", statusClass: "border-teal-200 bg-teal-50/80 text-teal-700" },
-  { type: "Return", reference: "RET-004-92", amount: "-$120.00", date: "Oct 22, 2024", status: "RETURNED", statusClass: "border-violet-200 bg-violet-50/80 text-violet-700" },
+  { type: "Sales", reference: "INV-2024-001", amount: "$1,240.00", date: "Oct 24, 2024", status: "COMPLETED", statusTone: "success" as StatusTone },
+  { type: "Purchase", reference: "PO-2024-882", amount: "$850.00", date: "Oct 23, 2024", status: "PENDING", statusTone: "warning" as StatusTone },
+  { type: "Sales", reference: "INV-2024-002", amount: "$3,100.00", date: "Oct 22, 2024", status: "COMPLETED", statusTone: "success" as StatusTone },
+  { type: "Return", reference: "RET-004-92", amount: "-$120.00", date: "Oct 22, 2024", status: "RETURNED", statusTone: "info" as StatusTone },
 ]
 
-const alerts = [
-  { name: "Logitech MX Master 3S", left: "Only 2 left", leftClass: "border-rose-200 bg-rose-50/80 text-rose-700", icon: "i-lucide-mouse" },
-  { name: "HP LaserJet Pro", left: "Only 5 left", leftClass: "border-rose-200 bg-rose-50/80 text-rose-700", icon: "i-lucide-printer" },
-  { name: "USB-C Hub", left: "Only 12 left", leftClass: "border-amber-200 bg-amber-50/80 text-amber-700", icon: "i-lucide-usb" },
-  { name: "Sony WH-1000XM5", left: "Only 3 left", leftClass: "border-rose-200 bg-rose-50/80 text-rose-700", icon: "i-lucide-headphones" },
-]
-
-const amountTextClass = (amount: string) =>
-  amount.startsWith("-") ? "text-red-500" : "text-slate-700"
-
-const summaryDeltaClass = (card: SummaryCard) => {
-  if (card.deltaTrend === "down") return "text-red-500"
-  if (card.color === "amber") return "text-amber-500"
-  return "text-emerald-600"
-}
+const alerts = computed(() =>
+  lowStockProducts.value.slice(0, 4).map((product) => ({
+    name: product.name,
+    left: product.stock_qty <= 0 ? "Out of stock" : `Only ${product.stock_qty} left`,
+    leftTone: (product.stock_qty <= 0 ? "danger" : product.stock_qty <= 3 ? "danger" : "warning") as StatusTone,
+    icon: "i-lucide-package-2",
+  })),
+)
 </script>
 
 <template>
@@ -285,12 +276,12 @@ const summaryDeltaClass = (card: SummaryCard) => {
         :class="ui.summaryCard"
         :style="surfaceStyle"
       >
-        <div class="flex items-start justify-between">
-          <div :class="[ui.summaryIconBase, summaryIconClassByColor[card.color]]">
+        <div :class="ui.summaryHeader">
+          <div :class="[ui.summaryIconBase, summaryIconClass(card.color)]">
             <UIcon :name="card.icon" class="h-7 w-7" />
           </div>
           <div class="text-right">
-            <div :class="[ui.summaryDeltaBase, summaryDeltaClass(card)]">
+            <div :class="[ui.summaryDeltaBase, summaryDeltaClass(card.deltaTrend, card.color)]">
               <UIcon v-if="card.deltaTrend === 'up'" name="i-lucide-trending-up" class="h-4 w-4" />
               <UIcon v-else name="i-lucide-trending-down" class="h-4 w-4" />
               {{ card.delta }}
@@ -304,11 +295,11 @@ const summaryDeltaClass = (card: SummaryCard) => {
         <p :class="ui.summaryTitle" :style="mutedTextStyle">
           {{ t(card.title) }}
         </p>
-        <div class="mt-2 flex items-end justify-between gap-3 sm:gap-4">
-          <p :class="ui.summaryValue" :style="summaryValueStyleByColor[card.color]">
+        <div :class="ui.summaryValueRow">
+          <p :class="ui.summaryValue" :style="summaryValueStyle(card.color)">
             {{ card.value }}
           </p>
-          <div class="pb-1 sm:pb-2">
+          <div :class="ui.summarySparklineWrap">
             <svg :class="ui.summarySparkline" viewBox="0 0 60 24" fill="none">
               <path
                 :d="`M0 ${15 + Math.random() * 5} Q 15 ${5 + Math.random() * 10}, 30 ${12 + Math.random() * 5} T 60 ${2 + Math.random() * 10}`"
@@ -333,21 +324,21 @@ const summaryDeltaClass = (card: SummaryCard) => {
           </div>
 
           <div :class="ui.legend" :style="mutedTextStyle">
-            <div class="flex items-center gap-3">
+            <div :class="ui.legendItem">
               <span class="h-3 w-3 rounded-full bg-slate-700" />
               {{ t("dashboard.sales") }}
             </div>
-            <div class="flex items-center gap-3">
+            <div :class="ui.legendItem">
               <span class="h-3 w-3 rounded-full bg-slate-200" />
               {{ t("dashboard.purchases") }}
             </div>
           </div>
         </div>
 
-        <div class="mt-8 sm:mt-12">
+        <div :class="ui.chartWrap">
           <svg
             :viewBox="`0 0 ${chartWidth} ${chartHeight}`"
-            class="aspect-[16/6] w-full overflow-visible"
+            :class="ui.chartSvg"
             style="font-family: Poppins, sans-serif;"
           >
             <defs>
@@ -479,7 +470,7 @@ const summaryDeltaClass = (card: SummaryCard) => {
                   opacity: chartAnimated ? 1 : 0,
                   transform: chartAnimated ? 'scale(1)' : 'scale(0.65)',
                   transformOrigin: `${point.x}px ${point.y}px`,
-                  transition: `opacity 240ms ease ${420 + (index * 70)}ms, transform 240ms ease ${420 + (index * 70)}ms`,
+                  transition: `opacity 240ms ease ${420 + (index as number* 70)}ms, transform 240ms ease ${420 + (index as number* 70)}ms`,
                 }"
               />
               <circle
@@ -495,7 +486,7 @@ const summaryDeltaClass = (card: SummaryCard) => {
                   opacity: chartAnimated ? 1 : 0,
                   transform: chartAnimated ? 'scale(1)' : 'scale(0.65)',
                   transformOrigin: `${point.x}px ${point.y}px`,
-                  transition: `opacity 220ms ease ${520 + (index * 65)}ms, transform 220ms ease ${520 + (index * 65)}ms`,
+                  transition: `opacity 220ms ease ${520 + (index as number * 65)}ms, transform 220ms ease ${520 + (index as number* 65)}ms`,
                 }"
               />
             </g>
@@ -508,25 +499,46 @@ const summaryDeltaClass = (card: SummaryCard) => {
         <p :class="ui.panelSubtitle" :style="mutedTextStyle">{{ t("dashboard.distribution") }}</p>
 
         <div :class="ui.donutWrap">
-          <svg viewBox="0 0 100 100" class="h-full w-full -rotate-90 scale-105 sm:scale-110">
-            <circle cx="50" cy="50" r="40" fill="none" stroke="#f59e0b" stroke-width="12" stroke-linecap="round" />
-            <circle cx="50" cy="50" r="40" fill="none" stroke="#14b8a6" stroke-width="12" stroke-dasharray="20 251.2" stroke-dashoffset="-201" stroke-linecap="round" />
-            <circle cx="50" cy="50" r="40" fill="none" stroke="#5b7cff" stroke-width="12" stroke-dasharray="62.8 251.2" stroke-dashoffset="-138.2" stroke-linecap="round" />
-            <circle cx="50" cy="50" r="40" fill="none" stroke="#111c4e" stroke-width="12" stroke-dasharray="100.5 251.2" stroke-dashoffset="0" stroke-linecap="round" />
+          <svg viewBox="0 0 100 100" :class="ui.donutChart">
+            <circle
+              cx="50"
+              cy="50"
+              :r="donutRadius"
+              fill="none"
+              :stroke="isDark ? 'rgba(51,65,85,0.5)' : 'rgba(226,232,240,0.9)'"
+              stroke-width="12"
+            />
+            <circle
+              v-for="category in donutSlices"
+              :key="category.name"
+              cx="50"
+              cy="50"
+              :r="donutRadius"
+              fill="none"
+              :stroke="category.color"
+              stroke-width="12"
+              :stroke-dasharray="category.dashArray"
+              :stroke-dashoffset="category.dashOffset"
+              stroke-linecap="round"
+            />
           </svg>
-          <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <p :class="ui.donutValue" :style="donutValueStyle">1,204</p>
+          <div :class="ui.donutCenter">
+            <p :class="ui.donutValue" :style="donutValueStyle">{{ totalStockUnits.toLocaleString() }}</p>
             <p :class="ui.donutLabel" :style="mutedTextStyle">{{ t("dashboard.units") }}</p>
           </div>
         </div>
 
-        <div class="mt-8 space-y-4 sm:mt-10 sm:space-y-5 lg:mt-12">
-          <div v-for="category in categories" :key="category.name" :class="ui.categoryRow">
-            <div class="flex items-center gap-4">
-              <span class="h-2.5 w-2.5 rounded-full shadow-sm" :style="{ backgroundColor: category.color, boxShadow: `0 0 0 4px ${category.color}18` }" />
+        <div :class="ui.categoryList">
+          <div v-for="category in visibleStockByCategory" :key="category.name" :class="ui.categoryRow">
+            <div :class="ui.categoryMeta">
+              <span :class="ui.categoryDot" :style="{ backgroundColor: category.color, boxShadow: `0 0 0 4px ${category.color}18` }" />
               <span :class="ui.categoryName" :style="mutedTextStyle">{{ category.name }}</span>
             </div>
             <span :class="ui.categoryShare" :style="textStyle">{{ category.share }}</span>
+          </div>
+          <div v-if="!visibleStockByCategory.length" :class="ui.categoryRow">
+            <span :class="ui.categoryName" :style="mutedTextStyle">No stock data yet.</span>
+            <span :class="ui.categoryShare" :style="textStyle">0%</span>
           </div>
         </div>
       </section>
@@ -539,27 +551,27 @@ const summaryDeltaClass = (card: SummaryCard) => {
           <button :class="ui.tableAction" :style="mutedTextStyle">{{ t("dashboard.viewAll") }}</button>
         </div>
 
-        <div class="overflow-x-auto lg:overflow-visible">
-          <table class="w-full border-separate border-spacing-0">
+        <div :class="ui.tableScroller">
+          <table :class="ui.table">
             <thead :class="ui.tableHead" :style="{ ...mutedSurfaceStyle, ...mutedTextStyle }">
               <tr>
-                <th class="px-5 py-4 sm:px-8 lg:px-10 lg:py-5">{{ t("dashboard.type") }}</th>
-                <th class="px-4 py-4 sm:px-6 lg:py-5">{{ t("dashboard.reference") }}</th>
-                <th class="px-4 py-4 sm:px-6 lg:py-5">{{ t("dashboard.amount") }}</th>
-                <th class="px-4 py-4 sm:px-6 lg:py-5">{{ t("dashboard.date") }}</th>
-                <th class="px-5 py-4 text-center sm:px-8 lg:px-10 lg:py-5">{{ t("dashboard.status") }}</th>
+                <th :class="ui.tableHeadPrimaryCell">{{ t("dashboard.type") }}</th>
+                <th :class="ui.tableHeadCell">{{ t("dashboard.reference") }}</th>
+                <th :class="ui.tableHeadCell">{{ t("dashboard.amount") }}</th>
+                <th :class="ui.tableHeadCell">{{ t("dashboard.date") }}</th>
+                <th :class="ui.tableHeadStatusCell">{{ t("dashboard.status") }}</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100">
-              <tr v-for="row in transactions" :key="row.reference" class="group transition-colors hover:bg-slate-50/30">
+            <tbody :class="ui.tableBody">
+              <tr v-for="row in transactions" :key="row.reference" :class="ui.tableRow">
                 <td :class="ui.tableTypeCell" :style="textStyle">{{ row.type }}</td>
                 <td :class="ui.tableCell" :style="{ color: 'var(--app-fg-muted)' }">{{ row.reference }}</td>
                 <td :class="[ui.tableAmountCell, amountTextClass(row.amount)]">
                   {{ row.amount }}
                 </td>
                 <td :class="ui.tableCell" :style="{ color: 'var(--app-fg-muted)' }">{{ row.date }}</td>
-                <td class="px-5 py-4 text-center sm:px-8 sm:py-5 lg:px-10 lg:py-6">
-                  <span :class="[ui.tableStatus, row.statusClass]">
+                <td :class="ui.tableStatusCell">
+                  <span :class="[ui.tableStatus, statusToneClass(row.statusTone)]">
                     {{ row.status }}
                   </span>
                 </td>
@@ -580,12 +592,12 @@ const summaryDeltaClass = (card: SummaryCard) => {
             <div :class="ui.alertsIconWrap">
               <UIcon :name="item.icon" class="h-6 w-6 sm:h-7 sm:w-7" />
             </div>
-            <div class="min-w-0 flex-1">
+            <div :class="ui.alertsContent">
               <p :class="ui.alertsName" :style="textStyle">{{ item.name }}</p>
-              <p :class="[ui.alertsCount, item.leftClass]">{{ item.left }}</p>
-              <button class="mt-3 sm:hidden" :class="ui.alertsButton">{{ t("dashboard.reorder") }}</button>
+              <p :class="[ui.alertsCount, statusToneClass(item.leftTone)]">{{ item.left }}</p>
+              <button :class="[ui.alertsMobileButton, ui.alertsButton]">{{ t("dashboard.reorder") }}</button>
             </div>
-            <button class="hidden sm:inline-flex" :class="ui.alertsButton">{{ t("dashboard.reorder") }}</button>
+            <button :class="[ui.alertsDesktopButton, ui.alertsButton]">{{ t("dashboard.reorder") }}</button>
           </div>
         </div>
 

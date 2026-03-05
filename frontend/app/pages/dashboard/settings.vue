@@ -5,7 +5,7 @@ definePageMeta({
 })
 
 const { isDark, setTheme } = useThemeMode()
-const { language, setLanguage, t } = useAppLanguage()
+const { t } = useAppLanguage()
 const { fetchProfile, isLoadingProfile, profile, updateProfile } = useAdminProfile()
 const { prepareCroppedProfileImage } = useProfileImage()
 
@@ -487,30 +487,10 @@ const saveProfile = async () => {
             color: 'var(--app-fg)',
           }"
         >
-          <h2 class="text-lg font-semibold">{{ t("settings.language") }}</h2>
+          <h2 class="text-lg font-semibold">Language</h2>
           <p class="mt-1 text-sm" :style="{ color: 'var(--app-fg-muted)' }">
-            {{ t("settings.currentLanguage") }}: {{ language === "km" ? t("settings.khmer") : t("settings.english") }}
+            {{ t("settings.languageRemoved") }}
           </p>
-          <div class="mt-4 grid grid-cols-2 gap-2 rounded-2xl border p-1" :style="{ borderColor: 'var(--app-border)', backgroundColor: 'var(--app-surface-muted)' }">
-            <button
-              type="button"
-              class="flex h-11 items-center justify-center gap-2 rounded-xl text-sm font-semibold transition"
-              :class="language === 'en' ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200' : 'text-slate-500 hover:text-slate-800'"
-              @click="setLanguage('en')"
-            >
-              <UIcon name="i-circle-flags-us" class="h-4 w-4" />
-              {{ t("settings.english") }}
-            </button>
-            <button
-              type="button"
-              class="flex h-11 items-center justify-center gap-2 rounded-xl text-sm font-semibold transition"
-              :class="language === 'km' ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200' : 'text-slate-500 hover:text-slate-800'"
-              @click="setLanguage('km')"
-            >
-              <UIcon name="i-circle-flags-kh" class="h-4 w-4" />
-              {{ t("settings.khmer") }}
-            </button>
-          </div>
         </div>
       </div>
     </div>

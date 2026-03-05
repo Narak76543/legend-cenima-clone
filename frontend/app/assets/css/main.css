@@ -1,32 +1,39 @@
-@import url("https://fonts.googleapis.com/css2?family=Koh+Santepheap:wght@300;400;700;900&family=Poppins:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Koh+Santepheap:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "@nuxt/ui";
 
 :root {
-  --app-bg: #f1f5f9;
+  --light-theme-color: #f1f5f9;
+  --dark-theme-color: #020617;
+  --light-text-color: #0f172a;
+  --dark-text-color: #e2e8f0;
+  --light-hint-text-color: #64748b;
+  --dark-hint-text-color: #94a3b8;
+  --light-border-color: #e2e8f0;
+  --dark-border-color: #334155;
+  --app-bg: var(--light-theme-color);
   --app-surface: #ffffff;
   --app-surface-muted: #f8fafc;
-  --app-fg: #0f172a;
-  --app-fg-muted: #64748b;
-  --app-border: #e2e8f0;
+  --app-fg: var(--light-text-color);
+  --app-fg-muted: var(--light-hint-text-color);
+  --app-border: var(--light-border-color);
   --app-font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --app-font-family-km: "Koh Santepheap", "Noto Sans Khmer", "Khmer OS System", sans-serif;
   --app-font-size: 14px;
   --app-line-height: 1.5;
 }
 
 .theme-dark {
-  --app-bg: #020617;
+  --app-bg: var(--dark-theme-color);
   --app-surface: #0f172a;
   --app-surface-muted: #111827;
-  --app-fg: #e2e8f0;
-  --app-fg-muted: #94a3b8;
-  --app-border: #334155;
+  --app-fg: var(--dark-text-color);
+  --app-fg-muted: var(--dark-hint-text-color);
+  --app-border: var(--dark-border-color);
 }
 
-html[lang="km"] {
-  --app-font-family: var(--app-font-family-km);
-  --app-line-height: 1.7;
+html[lang="en"] {
+  --app-font-family: "Poppins", sans-serif;
+  --app-line-height: 1.5;
 }
 
 html,
@@ -40,14 +47,6 @@ body,
   line-height: var(--app-line-height);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-html[lang="km"] [class*="uppercase"] {
-  text-transform: none;
-}
-
-html[lang="km"] [class*="tracking-"] {
-  letter-spacing: normal !important;
 }
 
 body {
@@ -66,4 +65,8 @@ textarea {
 :focus-visible {
   outline: 2px solid var(--app-fg);
   outline-offset: 2px;
+}
+
+.font-khmer-display {
+  font-family: "Koh Santepheap", serif;
 }

@@ -8,6 +8,7 @@ const { clearProfile, fetchProfile, profile } = useAdminProfile()
 const menu = [
   { labelKey: "sidebar.overview", icon: "i-lucide-layout-grid", path: "/dashboard" },
   { labelKey: "sidebar.products", icon: "i-lucide-package", path: "/dashboard/products" },
+  { labelKey: "sidebar.categories", icon: "i-lucide-tags", path: "/dashboard/categories" },
   { labelKey: "sidebar.inventory", icon: "i-lucide-warehouse", path: "/dashboard/inventory" },
   { labelKey: "sidebar.purchases", icon: "i-lucide-shopping-cart", path: "/dashboard/purchases" },
   { labelKey: "sidebar.sales", icon: "i-lucide-receipt", path: "/dashboard/sales" },
@@ -48,14 +49,14 @@ const logout = async () => {
 
 <template>
   <aside
-    class="w-full shrink-0 border-b xl:min-h-screen xl:w-[21rem] xl:border-b-0 xl:border-r"
+    class="w-full shrink-0 border-b xl:min-h-screen xl:w-84 xl:border-b-0 xl:border-r"
     :style="{ backgroundColor: 'var(--app-surface)', borderColor: 'var(--app-border)' }"
   >
     <!-- Brand -->
     <div class="flex items-center px-4 py-4 sm:px-6 sm:py-5 xl:px-10 xl:pb-10 xl:pt-10">
       <NuxtLink to="/dashboard" class="flex items-center gap-4 sm:gap-5 xl:gap-6">
         <div
-          class="flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-lg sm:h-16 sm:w-16 xl:h-[4.25rem] xl:w-[4.25rem]"
+          class="flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-lg sm:h-16 sm:w-16 xl:h-17 xl:w-17"
           :class="isDark ? 'bg-slate-800 shadow-black/20 ring-1 ring-slate-700/70' : 'bg-slate-900 shadow-slate-900/10'"
         >
           <UIcon name="i-lucide-box" class="h-7 w-7 text-sky-300 sm:h-8 sm:w-8" />
@@ -101,7 +102,7 @@ const logout = async () => {
         :aria-label="t('settings.profileTitle')"
         :title="t('settings.profileTitle')"
       >
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-slate-100 bg-slate-50 ring-4 ring-slate-50/50 sm:h-14 sm:w-14 xl:h-[3.75rem] xl:w-[3.75rem]">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-slate-100 bg-slate-50 ring-4 ring-slate-50/50 sm:h-14 sm:w-14 xl:h-15 xl:w-15">
           <img
             v-if="profileImage"
             :src="profileImage"

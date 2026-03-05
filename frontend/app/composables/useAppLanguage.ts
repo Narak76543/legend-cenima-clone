@@ -1,4 +1,4 @@
-export type AppLanguage = "en" | "km"
+export type AppLanguage = "en"
 
 const messages = {
   en: {
@@ -46,6 +46,7 @@ const messages = {
     sidebar: {
       overview     : "Overview",
       products     : "Products",
+      categories   : "Categories",
       inventory    : "Inventory",
       purchases    : "Purchases",
       sales        : "Sales",
@@ -103,120 +104,7 @@ const messages = {
       saveProfile        : "Save profile",
       savingProfile      : "Saving...",
       profileSaved       : "Profile updated successfully.",
-      language           : "Language",
-      languageDescription: "Choose the language used in the interface.",
-      english            : "English",
-      khmer              : "Khmer",
-      currentLanguage    : "Current language",
-    },
-  },
-  km: {
-    common: {
-      stockflow    : "StockFlow",
-      inventory    : "ស្តុក",
-      management   : "ការគ្រប់គ្រង",
-      orContinue   : "ឬបន្ត",
-      terms        : "លក្ខខណ្ឌ",
-      privacyPolicy: "គោលការណ៍ឯកជនភាព",
-      signOut      : "ចាកចេញ",
-    },
-    auth: {
-      adminConsole       : "ផ្ទាំងគ្រប់គ្រងអ្នកគ្រប់គ្រង",
-      signIn             : "ចូលប្រើ",
-      accessSecurely     : "ចូលទៅកាន់ផ្ទាំងគ្រប់គ្រងរបស់អ្នកដោយសុវត្ថិភាព។",
-      email              : "អ៊ីមែល",
-      password           : "ពាក្យសម្ងាត់",
-      rememberMe         : "ចងចាំខ្ញុំ",
-      days30             : "30 ថ្ងៃ",
-      use8Chars          : "ប្រើយ៉ាងហោចណាស់ 8 តួអក្សរ។",
-      tooShort           : "ខ្លីពេក - បន្ថែមតួអក្សរទៀត។",
-      looksGood          : "មើលទៅល្អ។",
-      welcomeBack        : "ស្វាគមន៍ការត្រឡប់មកវិញ។ កំពុងបញ្ជូនបន្ត...",
-      invalidCredentials : "អ៊ីមែល ឬ ពាក្យសម្ងាត់ មិនត្រឹមត្រូវ។",
-      signingIn          : "កំពុងចូល...",
-      signInWithSso      : "ចូលជាមួយ SSO",
-      createAccount      : "បង្កើតគណនី",
-      createAdminAccount : "បង្កើតគណនីអ្នកគ្រប់គ្រងជាមួយព័ត៌មានផ្ទាល់ខ្លួនរបស់អ្នក។",
-      fullName           : "ឈ្មោះពេញ",
-      jobTitle           : "តួនាទីការងារ",
-      phone              : "លេខទូរស័ព្ទ",
-      bio                : "ប្រវត្តិខ្លី",
-      profileImage       : "រូបភាពប្រវត្តិរូប",
-      uploadPhoto        : "បញ្ចូលរូបភាព",
-      switchToRegister   : "មិនទាន់មានគណនី? ចុះឈ្មោះ",
-      switchToSignIn     : "មានគណនីរួចហើយ? ចូលប្រើ",
-      registering        : "កំពុងបង្កើតគណនី...",
-      registrationSuccess: "បានបង្កើតគណនី។ កំពុងបញ្ជូនបន្ត...",
-      invalidImage       : "សូមជ្រើសរើសឯកសាររូបភាពត្រឹមត្រូវ។",
-      agreePrefix        : "ដោយបន្ត អ្នកយល់ព្រមនឹង",
-      and                : "និង",
-      secureAdminAccess  : "ការចូលប្រើអ្នកគ្រប់គ្រងដោយសុវត្ថិភាព",
-    },
-    sidebar: {
-      overview     : "ទិដ្ឋភាពទូទៅ",
-      products     : "ផលិតផល",
-      inventory    : "ស្តុក",
-      purchases    : "ការទិញ",
-      sales        : "ការលក់",
-      reports      : "របាយការណ៍",
-      users        : "អ្នកប្រើប្រាស់",
-      settings     : "ការកំណត់",
-      administrator: "អ្នកគ្រប់គ្រង",
-    },
-    header: {
-      searchPlaceholder: "ស្វែងរកផលិតផល, SKU, វិក្កយបត្រ...",
-      thisWeek         : "សប្តាហ៍នេះ",
-      thisMonth        : "ខែនេះ",
-    },
-    dashboard: {
-      salesVsPurchases   : "ការលក់ និង ការទិញ",
-      weeklyComparison   : "ការប្រៀបធៀបវិភាគប្រចាំសប្តាហ៍",
-      sales              : "ការលក់",
-      purchases          : "ការទិញ",
-      stockByCategory    : "ស្តុកតាមប្រភេទ",
-      distribution       : "ការចែកចាយផលិតផល",
-      units              : "ឯកតា",
-      recentTransactions : "ប្រតិបត្តិការថ្មីៗ",
-      viewAll            : "មើលទាំងអស់",
-      type               : "ប្រភេទ",
-      reference          : "លេខយោង",
-      amount             : "ចំនួន",
-      date               : "កាលបរិច្ឆេទ",
-      status             : "ស្ថានភាព",
-      lowStockProducts   : "ផលិតផលស្តុកទាប",
-      requiresAttention  : "ត្រូវការការយកចិត្តទុកដាក់ភ្លាមៗ",
-      reorder            : "បញ្ជាទិញឡើងវិញ",
-      manageAlerts       : "គ្រប់គ្រងការជូនដំណឹង",
-      totalSalesToday    : "ការលក់សរុប (ថ្ងៃនេះ)",
-      totalPurchasesToday: "ការទិញសរុប (ថ្ងៃនេះ)",
-      netProfitToday     : "ប្រាក់ចំណេញសុទ្ធ (ថ្ងៃនេះ)",
-      lowStockAlerts     : "ការជូនដំណឹងស្តុកទាប",
-      vsYesterday        : "ប្រៀបនឹងម្សិលមិញ",
-      since8am           : "ចាប់ពីម៉ោង 8 ព្រឹក",
-    },
-    settings: {
-      title              : "ការកំណត់",
-      description        : "កំណត់ចំណូលចិត្តកម្មវិធីរបស់អ្នក។",
-      lightMode          : "របៀបភ្លឺ",
-      lightDescription   : "ផ្ទៃភ្លឺ និង ច្បាស់សម្រាប់ការងារពេលថ្ងៃ។",
-      darkMode           : "របៀបងងឹត",
-      darkDescription    : "ផ្ទៃមិនចាំងភ្នែក សម្រាប់ការងារពេលយប់។",
-      quickToggle        : "ប្តូររហ័ស",
-      currentTheme       : "របៀបបច្ចុប្បន្ន",
-      switchToLight      : "ប្តូរទៅរបៀបភ្លឺ",
-      switchToDark       : "ប្តូរទៅរបៀបងងឹត",
-      profileTitle       : "ប្រវត្តិរូបអ្នកគ្រប់គ្រង",
-      profileDescription : "គ្រប់គ្រងព័ត៌មានផ្ទាល់ខ្លួន និង រូបភាពប្រវត្តិរូបរបស់អ្នក។",
-      accountEmail       : "អ៊ីមែលគណនី",
-      roleLabel          : "តួនាទី",
-      saveProfile        : "រក្សាទុក",
-      savingProfile      : "កំពុងរក្សាទុក...",
-      profileSaved       : "បានធ្វើបច្ចុប្បន្នភាពប្រវត្តិរូបរួចរាល់។",
-      language           : "ភាសា",
-      languageDescription: "ជ្រើសរើសភាសាសម្រាប់បង្ហាញក្នុងប្រព័ន្ធ។",
-      english            : "អង់គ្លេស",
-      khmer              : "ខ្មែរ",
-      currentLanguage    : "ភាសាបច្ចុប្បន្ន",
+      languageRemoved    : "Interface language is fixed to English.",
     },
   },
 } as const
@@ -233,19 +121,13 @@ const getMessage = (language: AppLanguage, path: string) => {
 }
 
 export const useAppLanguage = () => {
-  const language = useCookie<AppLanguage>("app_language", {
-    default: () => "en",
-    path: "/",
-    sameSite: "lax",
-  })
+  const language = computed<AppLanguage>(() => "en")
 
-  const setLanguage = (value: AppLanguage) => {
-    language.value = value
-  }
+  const setLanguage = (_value: AppLanguage) => {}
 
   const t = (path: string) => getMessage(language.value, path)
 
-  const isKhmer = computed(() => language.value === "km")
+  const isKhmer = computed(() => false)
 
   return {
     language,
