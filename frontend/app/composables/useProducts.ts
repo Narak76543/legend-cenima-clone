@@ -1,44 +1,43 @@
 export type ProductItem = {
-  id: string
-  category_id: string
-  name: string
-  name_lc: string
-  sku: string
-  barcode: string | null
-  description: string | null
-  description_lc: string | null
-  image_url: string | null
-  cost_price: string | number
-  sell_price: string | number
-  stock_qty: number
+  id                 : string
+  category_id        : string
+  name               : string
+  name_lc            : string
+  sku                : string
+  barcode            : string | null
+  description        : string | null
+  description_lc     : string | null
+  image_url          : string | null
+  cost_price         : string | number
+  sell_price         : string | number
+  stock_qty          : number
   low_stock_threshold: number
-  is_active: boolean
-  created_at: string | null
-  updated_at: string | null
+  is_active          : boolean
+  created_at         : string | null
+  updated_at         : string | null
 }
 
 export type ProductPayload = {
-  category_id: string
-  name: string
-  name_lc: string
-  sku: string
-  barcode: string | null
-  description: string | null
-  description_lc: string | null
-  image_url: string | null
-  cost_price: number
-  sell_price: number
-  stock_qty: number
+  category_id        : string
+  name               : string
+  name_lc            : string
+  sku                : string
+  barcode            : string | null
+  description        : string | null
+  description_lc     : string | null
+  image_url          : string | null
+  cost_price         : number
+  sell_price         : number
+  stock_qty          : number
   low_stock_threshold: number
-  is_active: boolean
+  is_active          : boolean
 }
 
 export const useProducts = () => {
   const { api } = useApiClient()
-
-  const products = useState<ProductItem[]>("products_items", () => [])
+  const products          = useState<ProductItem[]>("products_items", () => [])
   const isLoadingProducts = useState<boolean>("products_loading", () => false)
-  const isLoadingProduct = useState<boolean>("product_loading", () => false)
+  const isLoadingProduct  = useState<boolean>("product_loading", () => false)
   const isCreatingProduct = useState<boolean>("products_creating", () => false)
   const isUpdatingProduct = useState<boolean>("products_updating", () => false)
   const isDeletingProduct = useState<boolean>("products_deleting", () => false)
